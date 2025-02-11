@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -63,9 +64,14 @@
             border-radius: 4px;
             display: none;
         }
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+    <img src="logo.png" alt="Logo" class="logo">
     <div class="container">
         <h1>Autenticação de Documentos</h1>
         <form id="auth-form">
@@ -80,7 +86,7 @@
 
             <button type="submit">Buscar</button>
         </form>
-        <div class="message" id="error-message">Histórico escolar não localizado</div>
+        <div class="message" id="error-message">Documento não encontrado</div>
     </div>
 
     <script>
@@ -101,23 +107,19 @@
         document.getElementById('auth-form').addEventListener('submit', function(event) {
             event.preventDefault();
 
-            // Valores esperados
-            const expectedCodigo = "75fbf6cbf5";
-            const expectedData = "31/01/2025";
-            const expectedHora = "17:19:11";
+            const documentos = {
+                "75fbf6cbf5": { data: "05/02/2025", hora: "16:19:11", arquivo: "Histórico de Disciplinas UFAM.pdf" },
+                "4165d36034": { data: "05/02/2025", hora: "15:28:14", arquivo: "Declaração de aprovação no vestibular.pdf" }
+            };
 
-            // Valores inseridos pelo usuário
             const codigo = document.getElementById('codigo').value;
             const data = document.getElementById('data').value;
             const hora = document.getElementById('hora').value;
 
-            // Verificação
-            if (codigo === expectedCodigo && data === expectedData && hora === expectedHora) {
-                window.location.href = 'uploaded_document.pdf'; // Baixar o PDF
+            if (documentos[codigo] && documentos[codigo].data === data && documentos[codigo].hora === hora) {
+                window.location.href = documentos[codigo].arquivo;
             } else {
-                // Mostrar mensagem de erro
-                const errorMessage = document.getElementById('error-message');
-                errorMessage.style.display = 'block';
+                document.getElementById('error-message').style.display = 'block';
             }
         });
     </script>
