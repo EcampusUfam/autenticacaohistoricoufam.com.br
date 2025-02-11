@@ -1,42 +1,27 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autenticação de Documentos - UFAM</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <header>
-        <img src="sisu-ufam-800x440.jpg" alt="UFAM Logo" width="200">
-        <h1>Autenticação de Documentos - UFAM</h1>
-    </header>
-    <main>
-        <form id="authForm">
-            <label for="codigo">Código de Autenticidade:</label>
-            <input type="text" id="codigo" name="codigo" required>
-            <label for="data">Data de Emissão:</label>
-            <input type="datetime-local" id="data" name="data" required>
-            <button type="button" onclick="verificarDocumento()">Verificar</button>
-        </form>
-        <p id="resultado"></p>
-    </main>
-    <script>
-        function verificarDocumento() {
-            const codigo = document.getElementById("codigo").value;
-            const data = document.getElementById("data").value;
-            
-            const documentos = {
-                "75fbf6cbf5": "2025-02-05T16:19:11",
-                "4165d36034": "2025-02-05T15:28:14"
-            };
-            
-            if (documentos[codigo] && documentos[codigo] === data) {
-                document.getElementById("resultado").innerText = "Documento autenticado com sucesso.";
-            } else {
-                document.getElementById("resultado").innerText = "Documento não encontrado.";
-            }
-        }
-    </script>
-</body>
-</html>
+import os
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+# Dados esperados para autenticação
+documentos = {
+    "75fbf6cbf5": {"nome": "Histórico de Disciplinas UFAM.pdf", "data_emissao": "05/02/2025 às 16:19:11"},
+    "4165d36034": {"nome": "Declaração de aprovação no vestibular.pdf", "data_emissao": "05/02/2025 às 15:28:14"}
+}
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/validar', methods=['POST'])
+def validar():
+    codigo = request.form.get("codigo")
+    
+    if codigo in documentos:
+        documento = documentos[codigo]
+        return render_template("sucesso.html", nome=documento["nome"], data=documento["data_emissao"])
+    else:
+        return render_template("erro.html", mensagem="Documento não encontrado.")
+
+if __name__ == '__main__':
+    app.run(debug=True)
